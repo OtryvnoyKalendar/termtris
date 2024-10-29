@@ -1,7 +1,6 @@
-# Указываем минимальную версию CMake
 cmake_minimum_required(VERSION 3.15)
 
-project(MyProject)
+project(mycprog)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
@@ -14,13 +13,12 @@ include_directories(src/core)
 include_directories(src/game)
 include_directories(src/graphic)
 
-file(GLOB SOURCES "${PROJECT_SOURCE_DIR}/src/main.cpp")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../cmakebin)
+
 file(GLOB SOURCES "${PROJECT_SOURCE_DIR}/src/**/*.cpp")
 
-# Создаем исполняемый файл
 add_executable(${PROJECT_NAME} src/main.cpp ${SOURCES})
 message("PROJECT_SOURCE_DIR: ${SOURCES}")
 
-# Если нужно, можно добавить дополнительные библиотеки или зависимости
 target_link_libraries(${PROJECT_NAME} ncursesw)
 

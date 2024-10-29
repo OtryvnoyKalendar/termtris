@@ -2,6 +2,7 @@
 *.d
 
 build/
+cmakebin/
 
 # Object files
 *.o
