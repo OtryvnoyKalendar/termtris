@@ -1,6 +1,6 @@
-# termraria
+# termtris
 
-![screenshot|400](https://github.com/OtryvnoyKalendar/termraria/blob/main/screenshots/screenshot%202.png)
+![screenshot|400](https://github.com/OtryvnoyKalendar/termtris/blob/main/screenshots/screenshot%201.png)
 
 ### Общее описание
 Termtris - это тетрис для консоли Linux. Это только прототип игры, которую я написал для практики языка C++.
