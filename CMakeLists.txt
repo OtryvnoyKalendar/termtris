@@ -33,6 +33,9 @@ add_executable(MyExecutable ${ALL_SOURCES})
 # Если нужно, можно добавить дополнительные библиотеки или зависимости
 # target_link_libraries(MyExecutable <libraries>)
 
+
+
+
 #[[
 cmake_minimum_required(VERSION 3.15)
 

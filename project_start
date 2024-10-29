@@ -63,9 +63,9 @@ handle_argument() {
 				debug_mode="-g3"
 				run_mode="start_debugger"
 				;;
-			donly)
+			debug)
 				debug_mode="-g3"
-				run_mode="debug_only"
+				run_mode="debug_compile"
 				;;
 			conly)
 				run_mode="compile_only"
