@@ -5,6 +5,7 @@ script_version="1.11" # версия скрипта
 program_name="mycprog"
 source_find_format="cpp"
 header_find_format="hpp"
+find_directory="./src/"
 compiler="g++"
 dynamic_lib="-lm -lncursesw"
 warnings="-Wall -Wextra -Wpedantic"
@@ -25,9 +26,9 @@ run_mode=""
 file_exists=false
 deleted_files="неизвестно"
 
-found_sources=`find ./ -type f -name "*.$source_find_format" -printf "%p "`
-found_headers=`find ./ -type f -name "*.$header_find_format" -printf "%p "` # не используется
-include_dirs=`find ./ -name "*.$header_find_format" -exec dirname {} \; | sort -u | awk '{printf "-I%s ", $0}'`
+found_sources=`find $find_directory -type f -name "*.$source_find_format" -printf "%p "`
+found_headers=`find $find_directory -type f -name "*.$header_find_format" -printf "%p "` # не используется
+include_dirs=`find $find_directory -name "*.$header_find_format" -exec dirname {} \; | sort -u | awk '{printf "-I%s ", $0}'`
 
 print_message() {
 	echo -e "${1}${2}${NO_COLOR}" # escape-последовательности
@@ -76,6 +77,9 @@ handle_argument() {
 			exit)
 				run_mode="exit"
 				;;
+			cmake)
+				run_mode="cmake"
+				;;
 			*)
 				print_message $RED "Некорректный аргумент компиляции: $1"
 				;;
@@ -103,9 +107,20 @@ check_and_compile() {
 	print_dashes
 }
 
+run_program() {
+	print_message $NO_COLOR "Вот и начинается программа:"
+	print_dashes
+	./$program_name
+	return_value="$?"
+	print_return
+}
+
 #основная логика скрипта
 handle_argument $1
-if [ "$run_mode" != "exit" ]
+# Обработчик сигнала INT при завершении через Ctrl+C
+trap 'echo "Программа была закрыта вручную, скрипт продолжил выполняться"' INT
+
+if [ "$run_mode" != "exit" ] && [ "$run_mode" != "cmake" ]
 then
 
 clear
@@ -129,13 +144,7 @@ else
 	check_and_compile
 fi
 
-run_program() {
-	# Обработчик сигнала INT при завершении через Ctrl+C
-	trap 'echo "Программа была закрыта вручную, скрипт продолжил выполняться"' INT
-	
-	print_message $NO_COLOR "Вот и начинается программа:"
-	print_dashes
-	
+start_program_with_mode() {
 	if [ "$run_mode" = "new_window_debugger" ]; then
 		echo 0 > /proc/sys/kernel/yama/ptrace_scope # разрешение на присоединение к процессам
 		gnome-terminal -- sh -c '
@@ -143,25 +152,22 @@ run_program() {
 		pid=$(pgrep mycprog);
 		echo "PID: $pid";
 		gdb -silent ./mycprog -pid $pid;'
-		./$program_name
-		return_value="$?"
+		run_program
 		echo 1 > /proc/sys/kernel/yama/ptrace_scope # запрет на присоединение к процессам
 	elif [ "$run_mode" = "start_debugger" ]; then
 		gdb ./$program_name
 		return_value="неизвестно"
+		print_return
 	else
-		./$program_name
-		return_value="$?"
+		run_program
 	fi
-	
-	print_return
 	
 	rm $program_name
 }
 
 if [ "$run_mode" != "compile_only" ] && [ "$run_mode" != "log_only" ]; then
 	if exec_is_exists; then
-		run_program
+		start_program_with_mode
 
 		if exec_is_exists; then
 			deleted_files="Исполняемый файл был удалён дважды"
@@ -188,4 +194,34 @@ print_message $BLUE "$deleted_files"
 print_dashes
 
 fi # run_mode != exit
+
+
+if [ "$run_mode" = "cmake" ]
+then
+	if [ -d "build" ]
+	then
+		print_dashes
+		print_message $BLUE "Запуск cmake"
+		print_dashes
+		cd build
+		cmake ..
+		make
+		if [ "$?" = "0" ]
+		then
+			cd ../cmakebin
+			if exec_is_exists
+			then
+				run_program
+				rm $program_name
+			else
+				print_message $RED "Исполняемый файл не найден"
+			fi
+		else
+			print_message $RED "Ошибка компиляции или cmake сборки"
+		fi
+	else
+		mkdir build
+		print_message $RED "Директория build не найдена, поэтому должна быть создана новая директория build"
+	fi
+fi
 

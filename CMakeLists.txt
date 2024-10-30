@@ -18,7 +18,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../cmakebin)
 file(GLOB SOURCES "${PROJECT_SOURCE_DIR}/src/**/*.cpp")
 
 add_executable(${PROJECT_NAME} src/main.cpp ${SOURCES})
-message("PROJECT_SOURCE_DIR: ${SOURCES}")
+#message("PROJECT_SOURCE_DIR: ${SOURCES}")
 
 target_link_libraries(${PROJECT_NAME} ncursesw)
 
