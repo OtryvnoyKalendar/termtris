@@ -1,6 +1,6 @@
 # termtris
 
-<img src="https://github.com/OtryvnoyKalendar/termtris/blob/main/screenshots/screenshot%201.png" height="400" width="250" >
+<img src="https://github.com/OtryvnoyKalendar/termtris/blob/main/screenshots/screenshot%201.png" height="350" >
 
 ### Общее описание
 Termtris - это тетрис для консоли Linux. Это только прототип игры, которую я написал для практики языка C++.
